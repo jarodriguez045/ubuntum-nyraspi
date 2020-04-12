@@ -1,0 +1,50 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Speech.Synthesis;          // jcr: add a Reference to System.Speech
+using AIMLbot;                          // jcr: add a Referance to aimlbot.dll + copy folder to .../bin/Debug folders
+
+namespace jcrAILMBot
+{
+    public partial class Form1 : Form
+    {
+        private SpeechSynthesizer ssTalk = new SpeechSynthesizer();
+        public Form1()
+        {
+            InitializeComponent();
+            ssTalk.SelectVoiceByHints(VoiceGender.Male, VoiceAge.Child);        // jcr:
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Bot AI = new Bot();
+            AI.loadSettings(); //It will Load Settings from its Config Folder with this code
+            AI.loadAIMLFromFiles(); //With this Code It Will Load AIML Files from its AIML Folder
+            AI.isAcceptingUserInput = false; //With this Code it will Disable UserInput For Now
+            User myuser = new User("Username Here", AI); //With This Code We Will Add The User Through AI/Bot
+            AI.isAcceptingUserInput = true; //Now The User Input is Enabled Again with this Code
+            Request r = new Request(textBox1.Text, myuser, AI); //With This Code it will Request The Response From AIML Folders
+            Result res = AI.Chat(r); //With This Code It Will Get Result
+            textBox2.Text = "Colton AI Bot says " + res.Output; //With this Code It Will Write the Result of Textbox1 Response to Textbox2 text
+            //Now Coding Is Finished!
+            //Now Add/Copy & Paste AIML Folder & Config Folder to the Project Directory
+            //Now Test the Bot
+            tmrDelay.Enabled = true;        // jcr: enable Timer and wait 1/2 second
+        }
+        private void tmrDelay_Tick(object sender, EventArgs e)
+        {
+            // jcr: 1/2 second later 
+            tmrDelay.Enabled = false;   // disable timer so it doesnt keep firing this code
+            button1.Enabled = false;    // disable button so soemone does click it until its done
+            // activate Text-To-Speech
+            String strTmp = textBox2.Text;      // convert Textbox2 to String
+            ssTalk.Speak(strTmp);               // read it
+            button1.Enabled = true;
+        }
+    }
+}
